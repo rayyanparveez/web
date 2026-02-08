@@ -1,0 +1,1167 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Wafi Intelligence</title>
+  <meta name="description" content="Wafi Intelligence builds deep-tech automation systems that convert manual workflows into one-click execution." />
+
+  <style>
+    :root{
+      color-scheme: dark;
+
+      --bg0:#010204;
+      --bg1:#020408;
+
+      --ink:rgba(234,240,255,.92);
+      --muted:rgba(234,240,255,.70);
+      --muted2:rgba(234,240,255,.56);
+
+      --a:#7BB0FF;
+      --b:#8AE6FF;
+      --ok:#A7FFCF;
+
+      --r:22px;
+      --shadow: 0 26px 80px rgba(0,0,0,.48);
+      --shadow2: 0 40px 120px rgba(0,0,0,.55);
+
+      --ease: cubic-bezier(.2,.9,.2,1);
+      --ease2: cubic-bezier(.16,1,.3,1);
+    }
+
+    *{ box-sizing:border-box; }
+    html{ scroll-behavior:smooth; }
+
+    body{
+      margin:0;
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","SF Pro Text",
+        "Segoe UI Variable","Segoe UI",Roboto,Helvetica,Arial,system-ui;
+      color:var(--ink);
+      background:
+        radial-gradient(1200px 740px at 20% 15%, rgba(100,150,255,.18), transparent 55%),
+        radial-gradient(980px 620px at 80% 25%, rgba(0,220,255,.12), transparent 55%),
+        radial-gradient(900px 700px at 50% 90%, rgba(100,150,255,.10), transparent 60%),
+        linear-gradient(180deg,var(--bg0),var(--bg1));
+      overflow-x:hidden;
+      text-rendering: geometricPrecision;
+      -webkit-font-smoothing: antialiased;
+      -moz-osx-font-smoothing: grayscale;
+      perspective: 1100px;
+      perspective-origin: 50% 20%;
+    }
+
+    a{ color:inherit; text-decoration:none; }
+    .container{ width:min(1140px,92vw); margin:0 auto; }
+
+    /* Scrollbar */
+    ::-webkit-scrollbar{ width: 10px; }
+    ::-webkit-scrollbar-track{ background: rgba(0,0,0,.25); }
+    ::-webkit-scrollbar-thumb{
+      background: rgba(255,255,255,.14);
+      border: 2px solid rgba(0,0,0,.25);
+      border-radius: 999px;
+    }
+    ::-webkit-scrollbar-thumb:hover{ background: rgba(255,255,255,.18); }
+
+    /* --- 3D stage --- */
+    .stage{
+      position:fixed; inset:0;
+      z-index:-3;
+      pointer-events:none;
+      overflow:hidden;
+      transform-style: preserve-3d;
+    }
+    .blob{
+      position:absolute;
+      width:520px; height:520px;
+      border-radius: 50%;
+      filter: blur(42px) saturate(145%);
+      opacity:.55;
+      mix-blend-mode: screen;
+      transform: translate3d(0,0,0);
+      will-change: transform;
+    }
+    .blob.one{
+      background: radial-gradient(circle at 30% 30%, rgba(123,176,255,.90), rgba(123,176,255,0) 60%);
+      left:-160px; top:-140px;
+      animation: float1 12s var(--ease2) infinite alternate;
+    }
+    .blob.two{
+      background: radial-gradient(circle at 40% 40%, rgba(138,230,255,.72), rgba(138,230,255,0) 62%);
+      right:-200px; top:-120px;
+      animation: float2 14s var(--ease2) infinite alternate;
+    }
+    .blob.three{
+      background: radial-gradient(circle at 50% 50%, rgba(123,176,255,.58), rgba(123,176,255,0) 65%);
+      left:18%; bottom:-260px;
+      animation: float3 16s var(--ease2) infinite alternate;
+    }
+    @keyframes float1{
+      from{ transform: translate3d(-10px,-8px,-60px) scale(1.05); }
+      to{ transform: translate3d(30px,16px,-40px) scale(1.14); }
+    }
+    @keyframes float2{
+      from{ transform: translate3d(12px,-10px,-80px) scale(1.02); }
+      to{ transform: translate3d(-28px,22px,-55px) scale(1.12); }
+    }
+    @keyframes float3{
+      from{ transform: translate3d(18px,12px,-120px) scale(1.00); }
+      to{ transform: translate3d(-24px,-18px,-90px) scale(1.18); }
+    }
+
+    /* Grain */
+    .grain{
+      position:fixed; inset:0;
+      background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='220' height='220'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.85' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='220' height='220' filter='url(%23n)' opacity='.16'/%3E%3C/svg%3E");
+      opacity:.14;
+      mix-blend-mode: overlay;
+      pointer-events:none;
+      z-index:-2;
+    }
+
+    /* --- Nav --- */
+    .nav{
+      position:sticky; top:0; z-index:50;
+      backdrop-filter: blur(16px) saturate(130%);
+      background: linear-gradient(180deg, rgba(1,2,4,.78), rgba(1,2,4,.40));
+      border-bottom:1px solid rgba(255,255,255,.06);
+      transform: translateZ(0);
+    }
+    .nav-inner{
+      display:flex; align-items:center; justify-content:space-between;
+      padding:14px 0;
+    }
+    .brand{
+      display:flex; align-items:center; gap:12px;
+      letter-spacing:.65px;
+      text-transform:uppercase;
+      font-weight:560;
+      font-size:18px;
+      color:rgba(234,240,255,.92);
+    }
+    .links{
+      display:flex; align-items:center; gap:18px;
+      font-size:15px;
+      color:var(--muted);
+    }
+    .links a{
+      padding:8px 10px;
+      border-radius:12px;
+      transition: transform .18s ease, background .18s ease, color .18s ease;
+    }
+    .links a:hover{
+      background: rgba(255,255,255,.06);
+      color: rgba(234,240,255,.92);
+      transform: translateY(-1px);
+    }
+
+    /* --- Buttons --- */
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      gap:10px;
+      padding:12px 16px;
+      border-radius:14px;
+      border:1px solid rgba(255,255,255,.16);
+      background: rgba(255,255,255,.06);
+      font-weight:540;
+      font-size:15px;
+      letter-spacing:.2px;
+      transition: transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
+      box-shadow: 0 18px 60px rgba(0,0,0,.26);
+      cursor:pointer;
+      user-select:none;
+    }
+    .btn:hover{
+      transform: translateY(-2px) scale(1.01);
+      background: rgba(255,255,255,.10);
+      border-color: rgba(255,255,255,.22);
+      box-shadow: 0 28px 86px rgba(0,0,0,.34);
+    }
+    .btn.primary{
+      background: linear-gradient(135deg, rgba(123,176,255,.30), rgba(138,230,255,.16));
+      border-color: rgba(123,176,255,.48);
+    }
+    .btn.primary:hover{ border-color: rgba(138,230,255,.55); }
+    .dot{
+      width:8px; height:8px; border-radius:99px;
+      background: var(--b);
+      box-shadow: 0 0 0 6px rgba(138,230,255,.10);
+    }
+
+    /* --- Liquid glass surfaces --- */
+    .glass{
+      border-radius: var(--r);
+      border:1px solid rgba(255,255,255,.14);
+      background: linear-gradient(180deg, rgba(255,255,255,.09), rgba(255,255,255,.04));
+      backdrop-filter: blur(18px) saturate(160%) contrast(112%);
+      box-shadow: var(--shadow);
+      position:relative;
+      overflow:hidden;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .glass::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(760px 360px at 22% 0%, rgba(123,176,255,.24), transparent 60%),
+        radial-gradient(820px 420px at 88% 25%, rgba(138,230,255,.16), transparent 65%);
+      opacity:.85;
+      pointer-events:none;
+      transform: translateZ(-1px);
+    }
+    .glass::after{
+      content:"";
+      position:absolute;
+      inset:-40px -40px auto -40px;
+      height:160px;
+      background: linear-gradient(90deg, transparent, rgba(255,255,255,.22), transparent);
+      transform: translateX(-70%) rotate(10deg);
+      opacity:.34;
+      pointer-events:none;
+      filter: blur(1px);
+      animation: sheen 6.2s var(--ease2) infinite;
+    }
+    @keyframes sheen{
+      0%{ transform: translateX(-75%) rotate(10deg); opacity:0; }
+      14%{ opacity:.34; }
+      48%{ opacity:.18; }
+      100%{ transform: translateX(110%) rotate(10deg); opacity:0; }
+    }
+
+    /* Glass highlight reacts to mouse */
+    .shine{
+      position:absolute; inset:0;
+      pointer-events:none;
+      background: radial-gradient(500px 250px at var(--mx,50%) var(--my,20%), rgba(255,255,255,.16), transparent 60%);
+      opacity:.85;
+      mix-blend-mode: screen;
+      transform: translateZ(25px);
+    }
+
+    /* --- Hero --- */
+    header.hero{ padding: 86px 0 56px; position:relative; overflow:hidden; }
+    .hero-grid{ display:block; }
+
+    .kicker{
+      display:inline-flex; align-items:center; gap:10px;
+      padding:8px 12px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.04);
+      color: var(--muted);
+      font-size:12px;
+      font-weight:520;
+      width:fit-content;
+    }
+    .pulse{
+      width:8px; height:8px; border-radius:99px;
+      background: var(--ok);
+      box-shadow: 0 0 0 0 rgba(167,255,207,.32);
+      animation: pulse 1.8s ease-in-out infinite;
+    }
+    @keyframes pulse{
+      0%{ box-shadow: 0 0 0 0 rgba(167,255,207,.24); }
+      70%{ box-shadow: 0 0 0 12px rgba(167,255,207,0); }
+      100%{ box-shadow: 0 0 0 0 rgba(167,255,207,0); }
+    }
+
+    h1{
+      font-size: clamp(40px, 5.2vw, 66px);
+      line-height: 1.02;
+      margin: 16px 0 14px;
+      letter-spacing: -0.95px;
+      font-weight: 520;
+      text-wrap: balance;
+    }
+    .sub{
+      max-width: 62ch;
+      color: var(--muted);
+      font-size: 18px;
+      line-height: 1.85;
+      font-weight: 420;
+    }
+
+    .hero-actions{
+      display:flex; gap:12px; flex-wrap:wrap;
+      margin-top: 20px;
+    }
+
+    .panel-inner{ position:relative; padding: 22px; transform: translateZ(18px); }
+    .panel-title{ font-weight: 520; letter-spacing:-.2px; font-size: 20px; }
+    .panel-text{ margin-top: 10px; color: var(--muted); line-height: 1.85; font-size: 17px; font-weight: 420; }
+
+    /* NEW: mission stats inside the right box */
+    .mission-stats{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0,1fr));
+      gap:12px;
+      margin-top:18px;
+      transform: translateZ(12px);
+    }
+    .mission-stat{
+      border-radius:16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(0,0,0,.22);
+      backdrop-filter: blur(12px) saturate(140%);
+      padding:14px;
+      position:relative;
+      overflow:hidden;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+    .mission-stat::before{
+      content:"";
+      position:absolute;
+      inset:-2px;
+      background:
+        radial-gradient(360px 180px at 20% 0%, rgba(123,176,255,.18), transparent 60%),
+        radial-gradient(360px 200px at 90% 30%, rgba(138,230,255,.12), transparent 65%);
+      opacity:.6;
+      pointer-events:none;
+      transform: translateZ(-1px);
+    }
+    .mission-stat .label{
+      font-size:12px;
+      color:var(--muted2);
+      font-weight:520;
+      letter-spacing:.2px;
+      position:relative;
+      z-index:1;
+      transform: translateZ(12px);
+    }
+    .mission-stat .value{
+      margin-top:6px;
+      font-size:16px;
+      font-weight:600;
+      letter-spacing:-.25px;
+      position:relative;
+      z-index:1;
+      transform: translateZ(14px);
+    }
+
+    /* --- Sections --- */
+    section{
+      padding: 78px 0;
+      position:relative;
+      isolation:isolate;
+    }
+    section::before{
+      content:"";
+      position:absolute; inset:-95px -40px;
+      background:
+        radial-gradient(820px 380px at 28% 18%, rgba(123,176,255,.16), transparent 62%),
+        radial-gradient(900px 420px at 78% 14%, rgba(138,230,255,.10), transparent 64%);
+      opacity:0;
+      transform: translate3d(0,22px,0);
+      filter: blur(10px);
+      transition: opacity 1.0s var(--ease), transform 1.0s var(--ease);
+      pointer-events:none;
+      z-index:-1;
+    }
+    section.active::before{
+      opacity:1;
+      transform: translate3d(0,0,0);
+    }
+
+    .section-title{
+      margin:0;
+      font-size: 28px;
+      letter-spacing: -0.3px;
+      font-weight: 520;
+    }
+    .section-desc{
+      margin: 12px 0 0;
+      max-width: 72ch;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.85;
+      font-weight: 420;
+    }
+
+    /* --- Cards --- */
+    .grid-3{
+      display:grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 22px;
+    }
+    @media (max-width: 920px){
+      .grid-3{ grid-template-columns: 1fr; }
+    }
+
+    /* Section items - no boxes, scroll-linked animations */
+    .section-cards{
+      display:flex;
+      flex-direction:column;
+      gap: 48px;
+      margin-top: 32px;
+    }
+    .section-item{
+      padding: 0;
+      margin: 0;
+      border: none;
+      background: none;
+      box-shadow: none;
+      transform-style: preserve-3d;
+    }
+    .section-item .item-badge{
+      display:inline-block;
+      font-weight: 650;
+      letter-spacing: -.2px;
+      color: var(--b);
+      font-size: 16px;
+      margin-bottom: 10px;
+    }
+    .section-item h3{
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.2px;
+      font-weight: 540;
+    }
+    .section-item p{
+      margin: 12px 0 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.85;
+      font-weight: 420;
+    }
+
+    /* Scroll-linked: slide up + fade (Identity) - animates in/out with scroll */
+    .reveal-slide-up{
+      opacity:0;
+      transform: translate3d(0, 80px, 0);
+      filter: blur(8px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease), filter 0.7s var(--ease);
+      will-change: transform, opacity, filter;
+    }
+    .reveal-slide-up.in{
+      opacity:1;
+      transform: translate3d(0, 0, 0);
+      filter: blur(0);
+    }
+
+    /* Scroll-linked: alternate left/right + fade (Capabilities) */
+    .reveal-slide-alt{
+      opacity:0;
+      filter: blur(8px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease), filter 0.7s var(--ease);
+      will-change: transform, opacity, filter;
+    }
+    .reveal-slide-alt:nth-child(odd){ transform: translate3d(-80px, 0, 0); }
+    .reveal-slide-alt:nth-child(even){ transform: translate3d(80px, 0, 0); }
+    .reveal-slide-alt.in{
+      opacity:1;
+      transform: translate3d(0, 0, 0) !important;
+      filter: blur(0);
+    }
+
+    /* Scroll-linked: scale + fade (Framework) */
+    .reveal-scale{
+      opacity:0;
+      transform: scale(0.88);
+      filter: blur(8px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease), filter 0.7s var(--ease);
+      will-change: transform, opacity, filter;
+    }
+    .reveal-scale.in{
+      opacity:1;
+      transform: scale(1);
+      filter: blur(0);
+    }
+
+    .card{
+      border-radius: var(--r);
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.05);
+      backdrop-filter: blur(14px) saturate(140%);
+      padding: 20px;
+      box-shadow: 0 22px 70px rgba(0,0,0,.30);
+      position:relative;
+      overflow:hidden;
+      transform-style: preserve-3d;
+      will-change: transform;
+      transition: border-color .25s var(--ease), background .25s var(--ease), box-shadow .25s var(--ease);
+    }
+    .card::before{
+      content:"";
+      position:absolute; inset:-2px;
+      background:
+        radial-gradient(560px 260px at 25% 0%, rgba(123,176,255,.20), transparent 62%),
+        radial-gradient(560px 300px at 90% 30%, rgba(138,230,255,.12), transparent 66%);
+      opacity:.55;
+      pointer-events:none;
+      transform: translateZ(-1px);
+    }
+    .card:hover{
+      border-color: rgba(138,230,255,.32);
+      background: rgba(255,255,255,.07);
+      box-shadow: var(--shadow2);
+    }
+
+    .badge{
+      width:40px; height:40px;
+      border-radius: 16px;
+      display:grid; place-items:center;
+      background: linear-gradient(135deg, rgba(123,176,255,.26), rgba(138,230,255,.10));
+      border: 1px solid rgba(255,255,255,.12);
+      box-shadow: 0 0 0 10px rgba(123,176,255,.06);
+      font-weight: 650;
+      letter-spacing: -.2px;
+      margin-bottom: 12px;
+      position:relative;
+      z-index:1;
+      transform: translateZ(22px);
+    }
+    .card h3{
+      margin:0;
+      font-size: 20px;
+      letter-spacing: -0.2px;
+      font-weight: 540;
+      position:relative;
+      z-index:1;
+      transform: translateZ(18px);
+    }
+    .card p{
+      margin: 10px 0 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.85;
+      font-weight: 420;
+      position:relative;
+      z-index:1;
+      transform: translateZ(14px);
+    }
+
+    /* --- Proof --- */
+    .proof{
+      display:grid;
+      grid-template-columns: 1.06fr .94fr;
+      gap: 16px;
+      align-items: stretch;
+      margin-top: 22px;
+    }
+    @media (max-width: 920px){
+      .proof{ grid-template-columns:1fr; }
+    }
+    .field{
+      display:flex; flex-direction:column;
+      gap:8px;
+      margin: 12px 0;
+    }
+    .field label{
+      color: var(--muted2);
+      font-size: 14px;
+      font-weight: 520;
+      letter-spacing:.15px;
+    }
+    .field input{
+      padding: 12px 12px;
+      border-radius: 14px;
+      border:1px solid rgba(255,255,255,.14) !important;
+      background: rgba(0,0,0,.24) !important;
+      color: var(--ink) !important;
+      outline:none;
+      font-size: 16px;
+      font-weight: 450;
+      transition: box-shadow .2s ease, border-color .2s ease;
+      appearance: none;
+      -webkit-appearance: none;
+    }
+    .field input:focus{
+      border-color: rgba(138,230,255,.34) !important;
+      box-shadow: 0 0 0 8px rgba(138,230,255,.10) !important;
+    }
+    .field input[type="number"]::-webkit-outer-spin-button,
+    .field input[type="number"]::-webkit-inner-spin-button{
+      -webkit-appearance: none;
+      margin: 0;
+    }
+    .field input[type="number"]{ -moz-appearance: textfield; }
+
+    .result{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 14px;
+    }
+    @media (max-width: 520px){ .result{ grid-template-columns:1fr; } }
+
+    .metric{
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.22);
+      padding: 14px;
+      transform: translateZ(8px);
+    }
+    .metric .k{ font-size: 14px; color: var(--muted2); font-weight: 520; }
+    .metric .v{ margin-top: 6px; font-size: 20px; font-weight: 600; letter-spacing: -0.2px; }
+
+    canvas{
+      width:100%;
+      height: 235px;
+      border-radius: 18px;
+      border:1px solid rgba(255,255,255,.12);
+      background: rgba(0,0,0,.22);
+      transform: translateZ(10px);
+    }
+    .chart-note{
+      color: var(--muted2);
+      font-size: 14px;
+      line-height: 1.75;
+      font-weight: 420;
+      margin-top: 10px;
+      transform: translateZ(8px);
+    }
+
+    footer{
+      padding: 34px 0 46px;
+      color: rgba(234,240,255,.46);
+      font-size: 14px;
+      font-weight: 420;
+    }
+
+    /* --- Keynote reveals --- */
+    .reveal{
+      opacity:0;
+      transform: translate3d(0,56px,-30px) rotateX(10deg) scale(.97);
+      filter: blur(18px);
+      transition:
+        opacity 1.1s var(--ease),
+        transform 1.1s var(--ease),
+        filter 1.1s var(--ease);
+      will-change: transform, opacity, filter;
+      transform-origin: 50% 20%;
+    }
+    .reveal.in{
+      opacity:1;
+      transform: translate3d(0,0,0) rotateX(0deg) scale(1);
+      filter: blur(0);
+    }
+    [data-stagger] .reveal.in{ transition-delay: var(--d, 0ms); }
+
+    /* Scene cut for nav */
+    .cut{
+      position:fixed;
+      inset:0;
+      z-index:999;
+      pointer-events:none;
+      opacity:0;
+      background:
+        radial-gradient(900px 540px at 20% 10%, rgba(123,176,255,.22), transparent 60%),
+        radial-gradient(900px 540px at 80% 20%, rgba(138,230,255,.16), transparent 60%),
+        linear-gradient(180deg, rgba(1,2,4,.96), rgba(1,2,4,.92));
+      transition: opacity .36s var(--ease);
+      backdrop-filter: blur(0px);
+    }
+    body.is-cut .cut{ opacity:1; }
+
+    /* tilt targets */
+    .tilt{
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    /* Reduced motion */
+    @media (prefers-reduced-motion: reduce){
+      html{ scroll-behavior:auto; }
+      .reveal{ opacity:1 !important; transform:none !important; filter:none !important; transition:none !important; }
+      .reveal-slide-up,.reveal-slide-alt,.reveal-scale,.section-item{
+        opacity:1 !important; transform:none !important; filter:none !important; transition:none !important;
+      }
+      .blob{ animation:none !important; }
+      .cut{ display:none !important; }
+      .card,.btn,.links a{ transition:none !important; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="stage" id="stage">
+    <div class="blob one" id="b1"></div>
+    <div class="blob two" id="b2"></div>
+    <div class="blob three" id="b3"></div>
+  </div>
+  <div class="grain"></div>
+  <div class="cut" id="cut"></div>
+
+  <nav class="nav">
+    <div class="container nav-inner">
+      <div class="brand">
+        Wafi Intelligence
+      </div>
+      <div class="links">
+        <a class="navlink" href="#about">About</a>
+        <a class="navlink" href="#capabilities">Capabilities</a>
+        <a class="navlink" href="#framework">Framework</a>
+        <a class="navlink" href="#proof">Proof</a>
+        <a class="navlink" href="#contact">Contact</a>
+      </div>
+    </div>
+  </nav>
+
+  <header class="hero" id="top">
+    <div class="container hero-grid" data-stagger>
+      <div class="reveal">
+        <h1>Automate manual complexity into one-click execution.</h1>
+        <p class="sub">
+          Wafi Intelligence is a deep-tech automation firm operating at the intersection of AI engineering and business logic.
+          We create time by removing operational friction.
+        </p>
+
+        <div class="hero-actions">
+          <a class="btn primary navlink" href="#contact"><span class="dot"></span>Contact us</a>
+          <a class="btn navlink" href="#proof">View time model</a>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <section id="about">
+      <div class="container">
+        <div class="reveal">
+          <h2 class="section-title">Identity</h2>
+          <p class="section-desc">
+            Wafi Intelligence builds bespoke automation systems for teams that value leverage over headcount.
+          </p>
+        </div>
+
+        <div class="section-cards" data-animated-section="identity">
+          <div class="section-item reveal-slide-up">
+            <span class="item-badge">Mission</span>
+            <p>Automating the future of business by converting manual workflows into deterministic execution.</p>
+          </div>
+          <div class="section-item reveal-slide-up">
+            <span class="item-badge">Position</span>
+            <h3>Developer-first</h3>
+          </div>
+          <div class="section-item reveal-slide-up">
+            <span class="item-badge">Designed for</span>
+            <h3>Agent-ready ops</h3>
+          </div>
+          <div class="section-item reveal-slide-up">
+            <span class="item-badge">Outcome</span>
+            <h3>Time recovered</h3>
+          </div>
+          <div class="section-item reveal-slide-up">
+            <span class="item-badge">Execution</span>
+            <h3>One-click</h3>
+          </div>
+          <div class="section-item reveal-slide-up">
+            <span class="item-badge">AI</span>
+            <h3>High-level AI engineering</h3>
+            <p>Custom architectures engineered from the ground up to match your business logic.</p>
+          </div>
+          <div class="section-item reveal-slide-up">
+            <span class="item-badge">OP</span>
+            <h3>Business logic first</h3>
+            <p>We map how work flows, then convert multi-step operations into automated execution.</p>
+          </div>
+          <div class="section-item reveal-slide-up">
+            <span class="item-badge">⏱</span>
+            <h3>Time recovery</h3>
+            <p>We remove bottlenecks that cap growth and return hours back to your team.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="capabilities">
+      <div class="container">
+        <div class="reveal">
+          <h2 class="section-title">Capabilities</h2>
+          <p class="section-desc">Systems built for scalability without added human overhead.</p>
+        </div>
+
+        <div class="section-cards" data-animated-section="capabilities">
+          <div class="section-item reveal-slide-alt">
+            <span class="item-badge">01</span>
+            <h3>Bespoke AI engineering</h3>
+            <p>Architectures tailored to the constraints of your workflows, data, and operating model.</p>
+          </div>
+          <div class="section-item reveal-slide-alt">
+            <span class="item-badge">02</span>
+            <h3>Time recovery</h3>
+            <p>Manual bottlenecks identified and removed at the source.</p>
+          </div>
+          <div class="section-item reveal-slide-alt">
+            <span class="item-badge">03</span>
+            <h3>Infinite scalability</h3>
+            <p>Increase output without increasing headcount or capital spend.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="framework">
+      <div class="container">
+        <div class="reveal">
+          <h2 class="section-title">Operational framework</h2>
+          <p class="section-desc">Three phases from manual constraints to one-click execution.</p>
+        </div>
+
+        <div class="section-cards" data-animated-section="framework">
+          <div class="section-item reveal-scale">
+            <span class="item-badge">Phase 01</span>
+            <h3>Identify and map manual constraints.</h3>
+          </div>
+          <div class="section-item reveal-scale">
+            <span class="item-badge">Phase 02</span>
+            <h3>Engineer automation architecture to solve constraints.</h3>
+          </div>
+          <div class="section-item reveal-scale">
+            <span class="item-badge">Phase 03</span>
+            <h3>Deploy one-click execution and measure recovered time.</h3>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section id="proof">
+      <div class="container">
+        <div class="reveal">
+          <h2 class="section-title">Proof of value</h2>
+          <p class="section-desc">
+            Manual hours per week times hourly rate equals scale potential. Use the model to estimate annual time recovered and profit gains.
+          </p>
+        </div>
+
+        <div class="proof">
+          <div class="glass tilt reveal" data-tilt="strong">
+            <div class="shine"></div>
+            <div class="panel-inner">
+              <div class="panel-title">Time recovery model</div>
+              <div class="panel-text">Adjust inputs to estimate what automation unlocks over a year.</div>
+
+              <div class="field">
+                <label for="hours">Manual hours per week</label>
+                <input id="hours" type="number" min="0" step="1" value="20" />
+              </div>
+
+              <div class="field">
+                <label for="rate">Hourly rate (USD)</label>
+                <input id="rate" type="number" min="0" step="1" value="60" />
+              </div>
+
+              <div class="field">
+                <label for="recovery">Estimated percent of time recovered</label>
+                <input id="recovery" type="number" min="0" max="100" step="5" value="60" />
+              </div>
+
+              <div class="result">
+                <div class="metric">
+                  <div class="k">Annual time recovered</div>
+                  <div class="v" id="annualHours">--</div>
+                </div>
+                <div class="metric">
+                  <div class="k">Annual profit gains estimate</div>
+                  <div class="v" id="annualGains">--</div>
+                </div>
+              </div>
+
+              <div style="margin-top:16px; display:flex; gap:10px; flex-wrap:wrap;">
+                <a class="btn primary navlink" href="#contact"><span class="dot"></span>Start a conversation</a>
+                <button class="btn" id="resetBtn" type="button">Reset</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="glass tilt reveal" data-tilt="strong">
+            <div class="shine"></div>
+            <div class="panel-inner">
+              <div class="panel-title">Scale potential</div>
+              <div style="margin-top:12px;">
+                <canvas id="chart" width="900" height="360" aria-label="Scale potential chart"></canvas>
+              </div>
+              <div class="chart-note">
+                This chart shows directional value based on recovered time. Final ROI depends on workflow complexity and implementation depth.
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <section id="contact">
+      <div class="container">
+        <div class="glass tilt reveal" data-tilt="strong">
+          <div class="shine"></div>
+          <div class="panel-inner" style="display:flex; gap:12px; align-items:center; justify-content:space-between; flex-wrap:wrap;">
+            <div>
+              <div class="panel-title">Contact</div>
+              <div class="panel-text">rayyan@wafiintelligence.com</div>
+            </div>
+            <div style="display:flex; gap:10px; flex-wrap:wrap;">
+              <a class="btn primary" href="mailto:rayyan@wafiintelligence.com"><span class="dot"></span>Start a conversation</a>
+              <a class="btn navlink" href="#top">Back to top</a>
+            </div>
+          </div>
+        </div>
+
+        <footer>© <span id="year"></span> Wafi Intelligence</footer>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    // Year
+    document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Reveal + stagger (excludes section-cards, which use animatedSectionIO)
+    const reveals = document.querySelectorAll(".reveal");
+    const io = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) e.target.classList.add("in"); });
+    }, { threshold: 0.14 });
+    reveals.forEach(el => io.observe(el));
+
+    document.querySelectorAll("[data-stagger]").forEach(group => {
+      const items = group.querySelectorAll(".reveal");
+      items.forEach((el, i) => el.style.setProperty("--d", `${i * 120}ms`));
+    });
+
+    // Scroll-linked animations: content animates IN when section enters view, OUT when it leaves
+    const animatedSections = document.querySelectorAll("[data-animated-section]");
+    const STAGGER_MS = 180;
+    const animatedSectionIO = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        const container = entry.target;
+        const items = container.querySelectorAll(".section-item");
+        if (entry.isIntersecting) {
+          items.forEach((item, i) => {
+            setTimeout(() => item.classList.add("in"), i * STAGGER_MS);
+          });
+        } else {
+          items.forEach(item => item.classList.remove("in"));
+        }
+      });
+    }, { threshold: 0.1 });
+    animatedSections.forEach(el => animatedSectionIO.observe(el));
+
+    // Section activation glow
+    const sections = document.querySelectorAll("main section");
+    const sectionIO = new IntersectionObserver((entries) => {
+      entries.forEach(e => {
+        if (e.isIntersecting) {
+          sections.forEach(s => s.classList.remove("active"));
+          e.target.classList.add("active");
+        }
+      });
+    }, { threshold: 0.35 });
+    sections.forEach(s => sectionIO.observe(s));
+
+    // Scene cut on nav
+    const navlinks = document.querySelectorAll(".navlink");
+    function scrollToHash(hash){
+      const el = document.querySelector(hash);
+      if (!el) return;
+      el.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+    navlinks.forEach(a => {
+      a.addEventListener("click", (e) => {
+        const href = a.getAttribute("href") || "";
+        if (!href.startsWith("#")) return;
+        e.preventDefault();
+
+        document.body.classList.add("is-cut");
+        const hash = href;
+
+        setTimeout(() => {
+          history.pushState(null, "", hash);
+          scrollToHash(hash);
+        }, 140);
+
+        setTimeout(() => {
+          document.body.classList.remove("is-cut");
+        }, 560);
+      });
+    });
+
+    // 3D mouse tilt + reactive shine
+    const tiltEls = Array.from(document.querySelectorAll(".tilt"));
+    function clamp(n, a, b){ return Math.max(a, Math.min(b, n)); }
+
+    function applyTilt(el, clientX, clientY){
+      const rect = el.getBoundingClientRect();
+      const px = (clientX - rect.left) / rect.width;
+      const py = (clientY - rect.top) / rect.height;
+
+      const strength = (el.dataset.tilt === "strong") ? 11 : 7;
+      const rx = (py - 0.5) * -strength;
+      const ry = (px - 0.5) * strength;
+
+      const tz = (el.dataset.tilt === "strong") ? 10 : 6;
+
+      el.style.transform = `rotateX(${rx}deg) rotateY(${ry}deg) translateZ(${tz}px)`;
+
+      const mx = clamp(px*100, 0, 100).toFixed(1) + "%";
+      const my = clamp(py*100, 0, 100).toFixed(1) + "%";
+      el.style.setProperty("--mx", mx);
+      el.style.setProperty("--my", my);
+    }
+
+    function resetTilt(el){
+      el.style.transform = "rotateX(0deg) rotateY(0deg) translateZ(0px)";
+      el.style.setProperty("--mx", "50%");
+      el.style.setProperty("--my", "20%");
+    }
+
+    tiltEls.forEach(el => {
+      resetTilt(el);
+      el.addEventListener("mousemove", (e) => applyTilt(el, e.clientX, e.clientY));
+      el.addEventListener("mouseleave", () => resetTilt(el));
+    });
+
+    // Background parallax with mouse + scroll
+    const b1 = document.getElementById("b1");
+    const b2 = document.getElementById("b2");
+    const b3 = document.getElementById("b3");
+    let mx = 0, my = 0, sy = 0;
+
+    window.addEventListener("mousemove", (e) => {
+      const x = (e.clientX / window.innerWidth) - 0.5;
+      const y = (e.clientY / window.innerHeight) - 0.5;
+      mx = x; my = y;
+    }, { passive:true });
+
+    window.addEventListener("scroll", () => {
+      sy = window.scrollY || 0;
+    }, { passive:true });
+
+    function raf(){
+      const h = Math.max(1, document.body.scrollHeight - window.innerHeight);
+      const t = (sy / h);
+
+      b1.style.transform = `translate3d(${(-10 + t*40 + mx*40)}px, ${(-8 + t*28 + my*30)}px, -60px) scale(${1.06 + t*0.10})`;
+      b2.style.transform = `translate3d(${(12 - t*55 + mx*-46)}px, ${(-10 + t*34 + my*34)}px, -80px) scale(${1.03 + t*0.12})`;
+      b3.style.transform = `translate3d(${(18 - t*40 + mx*28)}px, ${(12 - t*48 + my*-26)}px, -120px) scale(${1.02 + t*0.16})`;
+
+      requestAnimationFrame(raf);
+    }
+    raf();
+
+    // Proof model + chart
+    const hoursEl = document.getElementById("hours");
+    const rateEl = document.getElementById("rate");
+    const recoveryEl = document.getElementById("recovery");
+    const annualHoursEl = document.getElementById("annualHours");
+    const annualGainsEl = document.getElementById("annualGains");
+    const resetBtn = document.getElementById("resetBtn");
+
+    const canvas = document.getElementById("chart");
+    const ctx = canvas.getContext("2d");
+
+    function formatNum(n){
+      return n.toLocaleString(undefined, { maximumFractionDigits: 0 });
+    }
+    function formatMoney(n){
+      return n.toLocaleString(undefined, { style:"currency", currency:"USD", maximumFractionDigits: 0 });
+    }
+    function moneyShort(n){
+      if (n >= 1e9) return "$" + (n/1e9).toFixed(1) + "B";
+      if (n >= 1e6) return "$" + (n/1e6).toFixed(1) + "M";
+      if (n >= 1e3) return "$" + (n/1e3).toFixed(1) + "K";
+      return "$" + Math.round(n);
+    }
+    function roundRect(ctx, x, y, w, h, r, fill, stroke){
+      const radius = Math.min(r, w/2, h/2);
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.arcTo(x + w, y, x + w, y + h, radius);
+      ctx.arcTo(x + w, y + h, x, y + h, radius);
+      ctx.arcTo(x, y + h, x, y, radius);
+      ctx.arcTo(x, y, x + w, y, radius);
+      ctx.closePath();
+      if (fill) ctx.fill();
+      if (stroke){ ctx.lineWidth = 1.2; ctx.stroke(); }
+    }
+
+    function drawChart(hoursPerWeek, rate, recoveryPct){
+      const w = canvas.width, h = canvas.height;
+      ctx.clearRect(0,0,w,h);
+
+      ctx.fillStyle = "rgba(0,0,0,0.22)";
+      roundRect(ctx, 0, 0, w, h, 18, true, false);
+
+      const scenarios = [0.2, 0.4, 0.6, 0.8, 1.0];
+      const values = scenarios.map(s => hoursPerWeek * s * 52 * rate);
+      const maxV = Math.max(1, ...values);
+
+      const padL = 70, padR = 30, padT = 26, padB = 52;
+      const chartW = w - padL - padR;
+      const chartH = h - padT - padB;
+
+      ctx.strokeStyle = "rgba(234,240,255,0.10)";
+      ctx.lineWidth = 1;
+      for(let i=0;i<=4;i++){
+        const y = padT + (chartH * i/4);
+        ctx.beginPath();
+        ctx.moveTo(padL, y);
+        ctx.lineTo(padL + chartW, y);
+        ctx.stroke();
+      }
+
+      ctx.fillStyle = "rgba(234,240,255,0.72)";
+      ctx.font = "560 14px -apple-system,BlinkMacSystemFont,Segoe UI Variable,Segoe UI,Roboto,Helvetica,Arial,system-ui";
+      ctx.fillText("Annual value estimate", padL, 18);
+
+      ctx.font = "500 12px -apple-system,BlinkMacSystemFont,Segoe UI Variable,Segoe UI,Roboto,Helvetica,Arial,system-ui";
+      ctx.fillStyle = "rgba(234,240,255,0.52)";
+      for(let i=0;i<=4;i++){
+        const v = maxV * (1 - i/4);
+        const y = padT + (chartH * i/4);
+        ctx.fillText(moneyShort(v), 10, y + 4);
+      }
+
+      const gap = 18;
+      const barW = (chartW - gap*(scenarios.length-1)) / scenarios.length;
+
+      for(let i=0;i<scenarios.length;i++){
+        const v = values[i];
+        const barH = (v / maxV) * chartH;
+        const x = padL + i*(barW + gap);
+        const y = padT + (chartH - barH);
+
+        const isActive = Math.abs(scenarios[i] - recoveryPct) < 0.001;
+
+        ctx.fillStyle = isActive ? "rgba(138,230,255,0.34)" : "rgba(123,176,255,0.18)";
+        ctx.strokeStyle = isActive ? "rgba(138,230,255,0.62)" : "rgba(123,176,255,0.28)";
+        roundRect(ctx, x, y, barW, barH, 14, true, true);
+
+        ctx.fillStyle = "rgba(234,240,255,0.62)";
+        ctx.font = "500 12px -apple-system,BlinkMacSystemFont,Segoe UI Variable,Segoe UI,Roboto,Helvetica,Arial,system-ui";
+        ctx.fillText(Math.round(scenarios[i]*100) + "%", x + 10, padT + chartH + 28);
+      }
+
+      ctx.fillStyle = "rgba(234,240,255,0.60)";
+      ctx.font = "500 12px -apple-system,BlinkMacSystemFont,Segoe UI Variable,Segoe UI,Roboto,Helvetica,Arial,system-ui";
+      ctx.fillText("Active recovery: " + Math.round(recoveryPct*100) + "%", padL, padT + chartH + 44);
+    }
+
+    function compute(){
+      const hours = Math.max(0, Number(hoursEl.value || 0));
+      const rate  = Math.max(0, Number(rateEl.value || 0));
+      const recoveryPct = Math.min(100, Math.max(0, Number(recoveryEl.value || 0))) / 100;
+
+      const annualRecoveredHours = hours * recoveryPct * 52;
+      const annualGains = annualRecoveredHours * rate;
+
+      annualHoursEl.textContent = formatNum(annualRecoveredHours) + " hrs";
+      annualGainsEl.textContent = formatMoney(annualGains);
+
+      drawChart(hours, rate, recoveryPct);
+    }
+
+    resetBtn.addEventListener("click", () => {
+      hoursEl.value = 20;
+      rateEl.value = 60;
+      recoveryEl.value = 60;
+      compute();
+    });
+
+    [hoursEl, rateEl, recoveryEl].forEach(el => el.addEventListener("input", compute));
+    compute();
+  </script>
+</body>
+</html>
