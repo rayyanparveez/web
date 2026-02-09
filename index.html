@@ -38,9 +38,11 @@
         "Segoe UI Variable","Segoe UI",Roboto,Helvetica,Arial,system-ui;
       color:var(--ink);
       background:
-        radial-gradient(1200px 740px at 20% 15%, rgba(100,150,255,.18), transparent 55%),
-        radial-gradient(980px 620px at 80% 25%, rgba(0,220,255,.12), transparent 55%),
-        radial-gradient(900px 700px at 50% 90%, rgba(100,150,255,.10), transparent 60%),
+        radial-gradient(820px 380px at 28% 25%, rgba(123,176,255,.12), transparent 58%),
+        radial-gradient(900px 420px at 78% 30%, rgba(138,230,255,.08), transparent 60%),
+        radial-gradient(1200px 740px at 20% 15%, rgba(100,150,255,.14), transparent 55%),
+        radial-gradient(980px 620px at 80% 25%, rgba(0,220,255,.10), transparent 55%),
+        radial-gradient(900px 700px at 50% 90%, rgba(100,150,255,.08), transparent 60%),
         linear-gradient(180deg,var(--bg0),var(--bg1));
       overflow-x:hidden;
       text-rendering: geometricPrecision;
@@ -119,12 +121,16 @@
       z-index:-2;
     }
 
-    /* --- Nav --- */
+    .svg-filters{ position:absolute; width:0; height:0; }
+    /* --- Nav (Glassmorphism) --- */
     .nav{
       position:sticky; top:0; z-index:50;
-      backdrop-filter: blur(16px) saturate(130%);
-      background: linear-gradient(180deg, rgba(1,2,4,.78), rgba(1,2,4,.40));
-      border-bottom:1px solid rgba(255,255,255,.06);
+      backdrop-filter: blur(20px) saturate(180%);
+      -webkit-backdrop-filter: blur(20px) saturate(180%);
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.12);
+      border-bottom: 1px solid rgba(255,255,255,.08);
+      box-shadow: 0 4px 24px rgba(0,0,0,.15);
       transform: translateZ(0);
     }
     .nav-inner{
@@ -150,38 +156,48 @@
       transition: transform .18s ease, background .18s ease, color .18s ease;
     }
     .links a:hover{
-      background: rgba(255,255,255,.06);
+      background: rgba(255,255,255,.08);
       color: rgba(234,240,255,.92);
       transform: translateY(-1px);
     }
 
-    /* --- Buttons --- */
+    /* --- Buttons (Glassmorphism + Squish) --- */
     .btn{
       display:inline-flex; align-items:center; justify-content:center;
       gap:10px;
       padding:12px 16px;
       border-radius:14px;
-      border:1px solid rgba(255,255,255,.16);
-      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.2);
+      background: rgba(255,255,255,.08);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
       font-weight:540;
       font-size:15px;
       letter-spacing:.2px;
-      transition: transform .2s ease, background .2s ease, border-color .2s ease, box-shadow .2s ease;
-      box-shadow: 0 18px 60px rgba(0,0,0,.26);
+      transition: transform .25s cubic-bezier(.34,1.56,.64,1), background .2s ease, border-color .2s ease, box-shadow .2s ease;
+      box-shadow: 0 8px 32px rgba(0,0,0,.2);
       cursor:pointer;
       user-select:none;
     }
     .btn:hover{
-      transform: translateY(-2px) scale(1.01);
-      background: rgba(255,255,255,.10);
-      border-color: rgba(255,255,255,.22);
-      box-shadow: 0 28px 86px rgba(0,0,0,.34);
+      transform: scale(1.03, 1.06);
+      background: rgba(255,255,255,.12);
+      border-color: rgba(255,255,255,.28);
+      box-shadow: 0 12px 40px rgba(0,0,0,.25);
+    }
+    .btn:active{
+      transform: scale(0.98, 0.96);
     }
     .btn.primary{
-      background: linear-gradient(135deg, rgba(123,176,255,.30), rgba(138,230,255,.16));
-      border-color: rgba(123,176,255,.48);
+      background: rgba(123,176,255,.25);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border-color: rgba(123,176,255,.4);
     }
-    .btn.primary:hover{ border-color: rgba(138,230,255,.55); }
+    .btn.primary:hover{
+      background: rgba(123,176,255,.35);
+      border-color: rgba(138,230,255,.55);
+    }
     .dot{
       width:8px; height:8px; border-radius:99px;
       background: var(--b);
@@ -240,8 +256,82 @@
     }
 
     /* --- Hero --- */
-    header.hero{ padding: 86px 0 56px; position:relative; overflow:hidden; }
-    .hero-grid{ display:block; }
+    header.hero{
+      padding: 0;
+      min-height: 92vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      position: relative;
+      overflow: hidden;
+    }
+    /* Inflatable / Tactile 3D stage */
+    .inflatable-stage{
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      pointer-events: none;
+      overflow: hidden;
+    }
+    .floating-asset{
+      position: absolute;
+      will-change: transform;
+      filter: url(#blob-distort);
+    }
+    .inflatable-blob{
+      border-radius: 50%;
+      box-shadow:
+        inset -20px -30px 50px rgba(0,0,0,.35),
+        inset 15px 20px 40px rgba(255,255,255,.25),
+        0 30px 60px rgba(0,0,0,.4);
+    }
+    .inflatable-blob.blob-a{
+      width: 280px; height: 280px;
+      left: 8%; top: 20%;
+      background: radial-gradient(circle at 35% 30%, rgba(255,255,255,.5), transparent 40%),
+        radial-gradient(circle at 60% 55%, rgba(138,230,255,.4), transparent 50%),
+        radial-gradient(circle at 30% 70%, rgba(123,176,255,.6), transparent 55%),
+        radial-gradient(circle at 50% 50%, #4a7fc9, #2d4a7a);
+    }
+    .inflatable-blob.blob-b{
+      width: 220px; height: 220px;
+      right: 12%; top: 25%;
+      background: radial-gradient(circle at 40% 35%, rgba(255,255,255,.45), transparent 38%),
+        radial-gradient(circle at 55% 60%, rgba(167,255,207,.35), transparent 48%),
+        radial-gradient(circle at 35% 65%, rgba(138,230,255,.5), transparent 52%),
+        radial-gradient(circle at 50% 50%, #3d6b8a, #1e3d52);
+    }
+    .inflatable-blob.blob-c{
+      width: 180px; height: 180px;
+      left: 25%; bottom: 15%;
+      background: radial-gradient(circle at 32% 28%, rgba(255,255,255,.5), transparent 42%),
+        radial-gradient(circle at 65% 50%, rgba(123,176,255,.45), transparent 48%),
+        radial-gradient(circle at 50% 50%, #5a8fd4, #2d4f78);
+    }
+    .inflatable-blob.blob-d{
+      width: 240px; height: 240px;
+      right: 25%; bottom: 20%;
+      background: radial-gradient(circle at 38% 32%, rgba(255,255,255,.4), transparent 40%),
+        radial-gradient(circle at 58% 58%, rgba(138,230,255,.5), transparent 50%),
+        radial-gradient(circle at 50% 50%, #3d7a9e, #1e3d5a);
+    }
+    .hero .container{
+      position: relative;
+      z-index: 1;
+    }
+    .hero-grid{ display:flex; flex-direction:column; align-items:center; text-align:center; }
+    .hero-grid .sub{ margin-left:auto; margin-right:auto; }
+    .hero-fade{
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+      will-change: opacity, transform;
+    }
+    .hero-fade.in{
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .hero-grid .hero-actions{ justify-content:center; }
 
     .kicker{
       display:inline-flex; align-items:center; gap:10px;
@@ -340,30 +430,115 @@
       transform: translateZ(14px);
     }
 
+    /* --- Next page: sliding panels + pop-in --- */
+    .next-page{
+      padding: 0;
+      min-height: 60vh;
+      display: flex;
+      align-items: stretch;
+      overflow: hidden;
+    }
+    .next-page-inner{
+      display: flex;
+      width: 100%;
+      min-height: 60vh;
+      gap: 0;
+      align-items: stretch;
+    }
+    .next-page-panel{
+      flex: 0 0 50%;
+      display: flex;
+      align-items: stretch;
+      justify-content: center;
+      padding: 28px 24px;
+      transition: transform 1s var(--ease);
+      will-change: transform;
+    }
+    .next-page-panel.panel-left{
+      background: linear-gradient(135deg, rgba(123,176,255,.08), rgba(5,12,24,.6));
+      border-right: 1px solid rgba(255,255,255,.08);
+      transform: translateX(-100%);
+    }
+    .next-page-panel.panel-right{
+      background: linear-gradient(225deg, rgba(138,230,255,.06), rgba(5,12,24,.6));
+      transform: translateX(100%);
+    }
+    .next-page.next-page-visible .panel-left{
+      transform: translateX(0);
+    }
+    .next-page.next-page-visible .panel-right{
+      transform: translateX(0);
+    }
+    .next-page .panel-content{
+      max-width: 44ch;
+      width: 100%;
+      height: 100%;
+    }
+    .next-page .panel-content.panel-grid{
+      display: grid;
+      grid-template-rows: 1fr 1fr 1fr;
+      gap: 0.75rem;
+      min-height: 0;
+    }
+    .next-page .panel-left .panel-grid{
+      grid-template-rows: auto auto auto;
+      gap: 0.4rem;
+    }
+    .next-page .panel-mission{
+      margin: 0 0 0.5rem 0;
+      padding-top: 30px;
+      font-size: 19px;
+      letter-spacing: -0.2px;
+      font-weight: 540;
+      color: var(--ink);
+    }
+    .next-page .panel-left .section-desc{
+      margin: 0 0 1.5rem 0;
+    }
+    .next-page .panel-paragraph{
+      margin: 0;
+      color: var(--muted);
+      font-size: 17px;
+      line-height: 1.55;
+      font-weight: 420;
+    }
+    .next-page .panel-items{
+      display: contents;
+    }
+    .next-page .panel-right .section-item{
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    .next-page .section-item.pop-in,
+    .next-page .panel-left [data-pop]{
+      opacity: 0;
+      transform: scale(0.92) translateY(12px);
+      transition: opacity 0.6s var(--ease), transform 0.6s var(--ease);
+      transition-delay: 0s;
+    }
+    .next-page.next-page-visible .section-item.pop-in.visible,
+    .next-page.next-page-visible .panel-left [data-pop].visible{
+      opacity: 1;
+      transform: scale(1) translateY(0);
+    }
+    @media (max-width: 880px){
+      .next-page-inner{ flex-direction: column; align-items: stretch; }
+      .next-page-panel{ flex: 1 1 auto; min-height: 50vh; }
+      .next-page-panel.panel-left{ border-right: none; border-bottom: 1px solid rgba(255,255,255,.08); }
+      .next-page-panel.panel-left{ transform: translateY(-100%); }
+      .next-page-panel.panel-right{ transform: translateY(100%); }
+      .next-page.next-page-visible .panel-left{ transform: translateY(0); }
+      .next-page.next-page-visible .panel-right{ transform: translateY(0); }
+    }
+
     /* --- Sections --- */
     section{
       padding: 78px 0;
       position:relative;
       isolation:isolate;
     }
-    section::before{
-      content:"";
-      position:absolute; inset:-95px -40px;
-      background:
-        radial-gradient(820px 380px at 28% 18%, rgba(123,176,255,.16), transparent 62%),
-        radial-gradient(900px 420px at 78% 14%, rgba(138,230,255,.10), transparent 64%);
-      opacity:0;
-      transform: translate3d(0,22px,0);
-      filter: blur(10px);
-      transition: opacity 1.0s var(--ease), transform 1.0s var(--ease);
-      pointer-events:none;
-      z-index:-1;
-    }
-    section.active::before{
-      opacity:1;
-      transform: translate3d(0,0,0);
-    }
-
+    /* Section glow: subtle gradient fades in when section is in view (scroll-linked) */
     .section-title{
       margin:0;
       font-size: 28px;
@@ -371,11 +546,11 @@
       font-weight: 520;
     }
     .section-desc{
-      margin: 12px 0 0;
-      max-width: 72ch;
+      margin: 0.75rem 0 1.5rem 0;
+      max-width: 65ch;
       color: var(--muted);
       font-size: 17px;
-      line-height: 1.85;
+      line-height: 1.55;
       font-weight: 420;
     }
 
@@ -415,15 +590,15 @@
     }
     .section-item h3{
       margin: 0;
-      font-size: 22px;
+      font-size: 19px;
       letter-spacing: -0.2px;
       font-weight: 540;
     }
     .section-item p{
-      margin: 12px 0 0;
+      margin: 0.5rem 0 0;
       color: var(--muted);
       font-size: 17px;
-      line-height: 1.85;
+      line-height: 1.55;
       font-weight: 420;
     }
 
@@ -441,7 +616,7 @@
       filter: blur(0);
     }
 
-    /* Scroll-linked: alternate left/right + fade (Capabilities) */
+    /* Scroll-linked: alternate left/right + fade (Framework uses reveal-slide-alt elsewhere) */
     .reveal-slide-alt{
       opacity:0;
       filter: blur(8px);
@@ -454,6 +629,169 @@
       opacity:1;
       transform: translate3d(0, 0, 0) !important;
       filter: blur(0);
+    }
+
+    /* Capabilities: centered layout + staggered fade-and-slide */
+    #capabilities{
+      padding-top: 130px;
+      position: relative;
+      overflow: hidden;
+    }
+    #capabilities .cap-sparkle-bg{
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+    }
+    #capabilities .cap-sparkle-bg svg{
+      width: 100%;
+      height: 100%;
+      opacity: 0.4;
+    }
+    #capabilities .cap-sparkle-bg .dot{
+      fill: var(--b);
+      animation: cap-pulse 2.5s var(--ease) infinite;
+    }
+    #capabilities .cap-sparkle-bg .dot:nth-child(1){ animation-delay: 0s; }
+    #capabilities .cap-sparkle-bg .dot:nth-child(2){ animation-delay: 0.4s; }
+    #capabilities .cap-sparkle-bg .dot:nth-child(3){ animation-delay: 0.8s; }
+    #capabilities .cap-sparkle-bg .dot:nth-child(4){ animation-delay: 1.2s; }
+    #capabilities .cap-sparkle-bg .dot:nth-child(5){ animation-delay: 1.6s; }
+    #capabilities .cap-sparkle-bg .dot:nth-child(6){ animation-delay: 2s; }
+    #capabilities .cap-sparkle-bg .line{
+      fill: none;
+      stroke: rgba(138,230,255,.25);
+      stroke-width: 1;
+      stroke-dasharray: 80;
+      stroke-dashoffset: 80;
+      animation: cap-draw 4s var(--ease) 1s forwards;
+    }
+    @keyframes cap-pulse{
+      0%, 100%{ opacity: 0.3; }
+      50%{ opacity: 0.9; }
+    }
+    @keyframes cap-draw{
+      to{ stroke-dashoffset: 0; }
+    }
+    #capabilities .container{
+      position: relative;
+      z-index: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+    }
+    #capabilities .section-title{
+      font-size: 36px;
+    }
+    #capabilities .section-desc{
+      margin-left: auto;
+      margin-right: auto;
+      font-size: 20px;
+    }
+    #capabilities .section-item h3{
+      font-size: 24px;
+    }
+    #capabilities .section-item p{
+      font-size: 19px;
+    }
+    #capabilities .section-cards{
+      align-items: center;
+      max-width: 56ch;
+    }
+    .cap-fade{
+      opacity: 0;
+      transform: translateY(50px);
+      transition: opacity 0.9s var(--ease), transform 0.9s var(--ease);
+      will-change: opacity, transform;
+    }
+    .cap-fade.in{
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    /* Framework: treasure map - glass boxes + S-curve path + scroll fade */
+    #framework .treasure-map{
+      display: flex;
+      flex-direction: column;
+      gap: 0;
+      margin-top: 40px;
+      max-width: 720px;
+      margin-left: auto;
+      margin-right: auto;
+    }
+    #framework .phase-glass{
+      position: relative;
+      padding: 36px 0;
+      opacity: 0;
+      transform: translateX(80px) scale(0.96);
+      transition: opacity 0.65s var(--ease), transform 0.65s var(--ease);
+      will-change: opacity, transform;
+    }
+    #framework .phase-glass.pulled-in{
+      opacity: 1;
+      transform: translateX(0) scale(1);
+    }
+    #framework .phase-glass .glass{
+      padding: 24px 28px;
+      position: relative;
+      z-index: 1;
+      width: fit-content;
+      min-width: 280px;
+    }
+    #framework .phase-glass .glass .item-badge,
+    #framework .phase-glass .glass h3{
+      position: relative;
+      z-index: 1;
+    }
+    #framework .phase-glass .item-badge{
+      display: inline-block;
+      font-weight: 650;
+      letter-spacing: -.2px;
+      color: var(--b);
+      font-size: 14px;
+      margin-bottom: 10px;
+    }
+    #framework .phase-glass h3{
+      margin: 0;
+      font-size: 19px;
+      letter-spacing: -0.2px;
+      font-weight: 540;
+      color: var(--ink);
+    }
+    #framework .map-connector{
+      height: 72px;
+      position: relative;
+      z-index: 0;
+      opacity: 0;
+      transition: opacity 0.5s var(--ease);
+      flex-shrink: 0;
+    }
+    #framework .map-connector.pulled-in{
+      opacity: 0.85;
+    }
+    #framework .map-connector svg{
+      width: 100%;
+      height: 100%;
+    }
+    #framework .map-connector path{
+      fill: none;
+      stroke: rgba(138,230,255,.5);
+      stroke-width: 1.5;
+      stroke-dasharray: 6 6;
+      stroke-linecap: round;
+    }
+    #framework .phase-glass:nth-child(1){ transform: translateX(80px) scale(0.96); }
+    #framework .phase-glass:nth-child(1).pulled-in{ transform: translateX(0) scale(1); }
+    #framework .phase-glass:nth-child(3){ transform: translateX(-80px) scale(0.96); }
+    #framework .phase-glass:nth-child(3).pulled-in{ transform: translateX(0) scale(1); }
+    #framework .phase-glass:nth-child(5){ transform: translateX(80px) scale(0.96); }
+    #framework .phase-glass:nth-child(5).pulled-in{ transform: translateX(0) scale(1); }
+    #framework .phase-glass:nth-child(1) .glass{ margin-left: auto; margin-right: 0; }
+    #framework .phase-glass:nth-child(3) .glass{ margin-left: 0; margin-right: auto; }
+    #framework .phase-glass:nth-child(5) .glass{ margin-left: auto; margin-right: 0; }
+    @media (max-width: 640px){
+      #framework .phase-glass .glass{ margin-left: auto !important; margin-right: auto !important; }
     }
 
     /* Scroll-linked: scale + fade (Framework) */
@@ -666,10 +1004,17 @@
     @media (prefers-reduced-motion: reduce){
       html{ scroll-behavior:auto; }
       .reveal{ opacity:1 !important; transform:none !important; filter:none !important; transition:none !important; }
-      .reveal-slide-up,.reveal-slide-alt,.reveal-scale,.section-item{
+      .reveal-slide-up,.reveal-slide-alt,.reveal-scale,.section-item,.cap-fade,.hero-fade{
         opacity:1 !important; transform:none !important; filter:none !important; transition:none !important;
       }
-      .blob{ animation:none !important; }
+      #capabilities .cap-sparkle-bg .dot{ animation:none !important; opacity:0.5 !important; }
+      #capabilities .cap-sparkle-bg .line{ animation:none !important; stroke-dashoffset:0 !important; }
+      #framework .phase-glass,
+      #framework .map-connector{ opacity:1 !important; transform:none !important; }
+      .blob,.inflatable-blob{ animation:none !important; }
+      .floating-asset{ transform:none !important; }
+      .next-page-panel{ transition:none !important; transform:none !important; }
+      .next-page .section-item.pop-in{ opacity:1 !important; transform:none !important; transition:none !important; }
       .cut{ display:none !important; }
       .card,.btn,.links a{ transition:none !important; }
     }
@@ -677,6 +1022,14 @@
 </head>
 
 <body>
+  <svg class="svg-filters" aria-hidden="true">
+    <defs>
+      <filter id="blob-distort" x="-20%" y="-20%" width="140%" height="140%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.012" numOctaves="2" result="noise" />
+        <feDisplacementMap in="SourceGraphic" in2="noise" scale="5" xChannelSelector="R" yChannelSelector="G" />
+      </filter>
+    </defs>
+  </svg>
   <div class="stage" id="stage">
     <div class="blob one" id="b1"></div>
     <div class="blob two" id="b2"></div>
@@ -701,92 +1054,73 @@
   </nav>
 
   <header class="hero" id="top">
-    <div class="container hero-grid" data-stagger>
-      <div class="reveal">
-        <h1>Automate manual complexity into one-click execution.</h1>
-        <p class="sub">
-          Wafi Intelligence is a deep-tech automation firm operating at the intersection of AI engineering and business logic.
-          We create time by removing operational friction.
-        </p>
-
-        <div class="hero-actions">
-          <a class="btn primary navlink" href="#contact"><span class="dot"></span>Contact us</a>
-          <a class="btn navlink" href="#proof">View time model</a>
-        </div>
-      </div>
+    <div class="inflatable-stage" id="inflatableStage">
+      <div class="floating-asset inflatable-blob blob-a" id="blobA"></div>
+      <div class="floating-asset inflatable-blob blob-b" id="blobB"></div>
+      <div class="floating-asset inflatable-blob blob-c" id="blobC"></div>
+      <div class="floating-asset inflatable-blob blob-d" id="blobD"></div>
+    </div>
+    <div class="container hero-grid" data-hero-stagger>
+      <h1 class="hero-fade">Automate manual complexity into one-click execution.</h1>
+      <p class="sub hero-fade">
+        Wafi Intelligence is a deep-tech automation firm operating at the intersection of AI engineering and business logic.
+        We create time by removing operational friction.
+      </p>
     </div>
   </header>
 
   <main>
-    <section id="about">
-      <div class="container">
-        <div class="reveal">
-          <h2 class="section-title">Identity</h2>
-          <p class="section-desc">
-            Wafi Intelligence builds bespoke automation systems for teams that value leverage over headcount.
-          </p>
+    <section id="about" class="next-page" data-next-page>
+      <div class="next-page-inner">
+        <div class="next-page-panel panel-left" data-panel>
+          <div class="panel-content panel-grid">
+            <p class="panel-mission pop-in" data-pop>Mission</p>
+            <p class="section-desc pop-in" data-pop>
+              Wafi Intelligence builds bespoke automation systems for teams that value leverage over headcount.
+            </p>
+            <p class="panel-paragraph pop-in" data-pop>
+              Automating the future of business by converting manual workflows into deterministic execution. We take a developer-first position, designed for agent-ready operations. Our outcome is time recovered, delivered through one-click execution.
+            </p>
+          </div>
         </div>
-
-        <div class="section-cards" data-animated-section="identity">
-          <div class="section-item reveal-slide-up">
-            <span class="item-badge">Mission</span>
-            <p>Automating the future of business by converting manual workflows into deterministic execution.</p>
-          </div>
-          <div class="section-item reveal-slide-up">
-            <span class="item-badge">Position</span>
-            <h3>Developer-first</h3>
-          </div>
-          <div class="section-item reveal-slide-up">
-            <span class="item-badge">Designed for</span>
-            <h3>Agent-ready ops</h3>
-          </div>
-          <div class="section-item reveal-slide-up">
-            <span class="item-badge">Outcome</span>
-            <h3>Time recovered</h3>
-          </div>
-          <div class="section-item reveal-slide-up">
-            <span class="item-badge">Execution</span>
-            <h3>One-click</h3>
-          </div>
-          <div class="section-item reveal-slide-up">
-            <span class="item-badge">AI</span>
-            <h3>High-level AI engineering</h3>
-            <p>Custom architectures engineered from the ground up to match your business logic.</p>
-          </div>
-          <div class="section-item reveal-slide-up">
-            <span class="item-badge">OP</span>
-            <h3>Business logic first</h3>
-            <p>We map how work flows, then convert multi-step operations into automated execution.</p>
-          </div>
-          <div class="section-item reveal-slide-up">
-            <span class="item-badge">⏱</span>
-            <h3>Time recovery</h3>
-            <p>We remove bottlenecks that cap growth and return hours back to your team.</p>
+        <div class="next-page-panel panel-right" data-panel>
+          <div class="panel-content panel-grid">
+            <div class="panel-items">
+              <div class="section-item pop-in" data-pop><span class="item-badge">AI</span><h3>High-level AI engineering</h3><p>Custom architectures engineered from the ground up to match your business logic.</p></div>
+              <div class="section-item pop-in" data-pop><span class="item-badge">OP</span><h3>Business logic first</h3><p>We map how work flows, then convert multi-step operations into automated execution.</p></div>
+              <div class="section-item pop-in" data-pop><span class="item-badge">⏱</span><h3>Time recovery</h3><p>We remove bottlenecks that cap growth and return hours back to your team.</p></div>
+            </div>
           </div>
         </div>
       </div>
     </section>
 
     <section id="capabilities">
+      <div class="cap-sparkle-bg" aria-hidden="true">
+        <svg viewBox="0 0 400 300" preserveAspectRatio="xMidYMid slice">
+          <circle class="dot" cx="15%" cy="20%" r="2"/>
+          <circle class="dot" cx="88%" cy="15%" r="2"/>
+          <circle class="dot" cx="25%" cy="75%" r="2"/>
+          <circle class="dot" cx="82%" cy="80%" r="2"/>
+          <circle class="dot" cx="50%" cy="35%" r="1.5"/>
+          <circle class="dot" cx="62%" cy="55%" r="1.5"/>
+          <path class="line" d="M 60 80 Q 120 60, 200 100 T 340 120"/>
+        </svg>
+      </div>
       <div class="container">
-        <div class="reveal">
-          <h2 class="section-title">Capabilities</h2>
-          <p class="section-desc">Systems built for scalability without added human overhead.</p>
-        </div>
+        <h2 class="section-title cap-fade">Capabilities</h2>
+        <p class="section-desc cap-fade">Systems built for scalability without added human overhead.</p>
 
-        <div class="section-cards" data-animated-section="capabilities">
-          <div class="section-item reveal-slide-alt">
-            <span class="item-badge">01</span>
+        <div class="section-cards" data-capabilities-cards>
+          <div class="section-item cap-fade">
             <h3>Bespoke AI engineering</h3>
             <p>Architectures tailored to the constraints of your workflows, data, and operating model.</p>
           </div>
-          <div class="section-item reveal-slide-alt">
-            <span class="item-badge">02</span>
+          <div class="section-item cap-fade">
             <h3>Time recovery</h3>
             <p>Manual bottlenecks identified and removed at the source.</p>
           </div>
-          <div class="section-item reveal-slide-alt">
-            <span class="item-badge">03</span>
+          <div class="section-item cap-fade">
             <h3>Infinite scalability</h3>
             <p>Increase output without increasing headcount or capital spend.</p>
           </div>
@@ -801,18 +1135,37 @@
           <p class="section-desc">Three phases from manual constraints to one-click execution.</p>
         </div>
 
-        <div class="section-cards" data-animated-section="framework">
-          <div class="section-item reveal-scale">
-            <span class="item-badge">Phase 01</span>
-            <h3>Identify and map manual constraints.</h3>
+        <div class="treasure-map" data-treasure-map>
+          <div class="phase-glass">
+            <div class="glass tilt" data-tilt="light">
+              <div class="shine"></div>
+              <span class="item-badge">Phase 01</span>
+              <h3>Identify and map manual constraints.</h3>
+            </div>
           </div>
-          <div class="section-item reveal-scale">
-            <span class="item-badge">Phase 02</span>
-            <h3>Engineer automation architecture to solve constraints.</h3>
+          <div class="map-connector">
+            <svg viewBox="0 0 100 72" preserveAspectRatio="none">
+              <path d="M 88,0 C 88,26 12,46 12,72"/>
+            </svg>
           </div>
-          <div class="section-item reveal-scale">
-            <span class="item-badge">Phase 03</span>
-            <h3>Deploy one-click execution and measure recovered time.</h3>
+          <div class="phase-glass">
+            <div class="glass tilt" data-tilt="light">
+              <div class="shine"></div>
+              <span class="item-badge">Phase 02</span>
+              <h3>Engineer automation architecture to solve constraints.</h3>
+            </div>
+          </div>
+          <div class="map-connector">
+            <svg viewBox="0 0 100 72" preserveAspectRatio="none">
+              <path d="M 12,0 C 12,26 88,46 88,72"/>
+            </svg>
+          </div>
+          <div class="phase-glass">
+            <div class="glass tilt" data-tilt="light">
+              <div class="shine"></div>
+              <span class="item-badge">Phase 03</span>
+              <h3>Deploy one-click execution and measure recovered time.</h3>
+            </div>
           </div>
         </div>
       </div>
@@ -909,6 +1262,43 @@
     // Year
     document.getElementById("year").textContent = new Date().getFullYear();
 
+    // Floating parallax - lazy cursor tracking (lerp) for inflatable blobs
+    (function(){
+      const hero = document.querySelector("header.hero");
+      const assets = document.querySelectorAll(".floating-asset");
+      if (!hero || !assets.length) return;
+
+      let mouseX = 0.5, mouseY = 0.5;
+      const pos = Array.from(assets).map(function() { return { x: 0, y: 0 }; });
+      const LERP = 0.03;
+
+      hero.addEventListener("mousemove", function(e) {
+        const r = hero.getBoundingClientRect();
+        mouseX = (e.clientX - r.left) / r.width;
+        mouseY = (e.clientY - r.top) / r.height;
+      });
+
+      function lerp(a, b, t) { return a + (b - a) * t; }
+
+      function animate() {
+        const centerX = 0.5, centerY = 0.5;
+        const targetX = (mouseX - centerX) * 40;
+        const targetY = (mouseY - centerY) * 30;
+        const bias = 18;
+
+        assets.forEach(function(el, i) {
+          const mult = 0.4 + (i % 3) * 0.3;
+          const sideBias = (el.classList.contains("blob-a") || el.classList.contains("blob-c")) ? -bias : bias;
+          const finalTargetX = targetX * mult + sideBias;
+          pos[i].x = lerp(pos[i].x, finalTargetX, LERP);
+          pos[i].y = lerp(pos[i].y, targetY * mult, LERP);
+          el.style.transform = "translate3d(" + pos[i].x + "px, " + pos[i].y + "px, 0)";
+        });
+        requestAnimationFrame(animate);
+      }
+      requestAnimationFrame(animate);
+    })();
+
     // Reveal + stagger (excludes section-cards, which use animatedSectionIO)
     const reveals = document.querySelectorAll(".reveal");
     const io = new IntersectionObserver((entries) => {
@@ -939,17 +1329,71 @@
     }, { threshold: 0.1 });
     animatedSections.forEach(el => animatedSectionIO.observe(el));
 
-    // Section activation glow
-    const sections = document.querySelectorAll("main section");
-    const sectionIO = new IntersectionObserver((entries) => {
-      entries.forEach(e => {
-        if (e.isIntersecting) {
-          sections.forEach(s => s.classList.remove("active"));
-          e.target.classList.add("active");
-        }
+    // Next page: sliding panels + staggered pop-in
+    const nextPage = document.querySelector("[data-next-page]");
+    if (nextPage) {
+      const popItems = nextPage.querySelectorAll("[data-pop]");
+      const nextPageIO = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            nextPage.classList.add("next-page-visible");
+            popItems.forEach((el, i) => {
+              setTimeout(() => el.classList.add("visible"), 400 + i * 80);
+            });
+          } else {
+            nextPage.classList.remove("next-page-visible");
+            popItems.forEach(el => el.classList.remove("visible"));
+          }
+        });
+      }, { threshold: 0.15 });
+      nextPageIO.observe(nextPage);
+    }
+
+    // Hero: staggered fade-and-slide on load (headline → subtext)
+    const heroGrid = document.querySelector("[data-hero-stagger]");
+    if (heroGrid) {
+      const heroFades = heroGrid.querySelectorAll(".hero-fade");
+      const HERO_STAGGER_MS = 200;
+      heroFades.forEach((el, i) => {
+        setTimeout(() => el.classList.add("in"), i * HERO_STAGGER_MS);
       });
-    }, { threshold: 0.35 });
-    sections.forEach(s => sectionIO.observe(s));
+    }
+
+    // Treasure map: phases + connectors "pulled in" on scroll (Phase 1 from right, Phase 2 from left, Phase 3 from right)
+    const treasureMap = document.querySelector("[data-treasure-map]");
+    if (treasureMap) {
+      const mapItems = treasureMap.querySelectorAll(".phase-glass, .map-connector");
+      const mapIO = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          const el = entry.target;
+          if (entry.isIntersecting && entry.intersectionRatio > 0.12) {
+            el.classList.add("pulled-in");
+          } else if (entry.intersectionRatio === 0) {
+            el.classList.remove("pulled-in");
+          }
+        });
+      }, { threshold: [0, 0.05, 0.12, 0.2, 0.3, 0.5, 0.7, 1], rootMargin: "-5% 0px -15% 0px" });
+      mapItems.forEach(el => mapIO.observe(el));
+    }
+
+    // Capabilities: exaggerated staggered fade-and-slide (headline → subtext → items)
+    const capabilitiesSection = document.getElementById("capabilities");
+    if (capabilitiesSection) {
+      const capFades = capabilitiesSection.querySelectorAll(".cap-fade");
+      const CAP_STAGGER_MS = 350;
+      const capIO = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            capFades.forEach((el, i) => {
+              setTimeout(() => el.classList.add("in"), i * CAP_STAGGER_MS);
+            });
+          } else {
+            capFades.forEach(el => el.classList.remove("in"));
+          }
+        });
+      }, { threshold: 0.14 });
+      capIO.observe(capabilitiesSection);
+    }
 
     // Scene cut on nav
     const navlinks = document.querySelectorAll(".navlink");
@@ -1165,3 +1609,5 @@
   </script>
 </body>
 </html>
+
+
